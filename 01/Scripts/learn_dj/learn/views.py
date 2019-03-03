@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from learn.models import LEARN,User
 # from templates import *
 # Create your views here.
@@ -31,11 +31,12 @@ def default(request):
     return render(request,'form.html')
 
 def add_user(request):
-    name = User.objects.get(name=request.POST['user'])
-    # print(name)
-    if name:
-        return HttpResponse('该用户已存在！')
-    else:
+
+    try:
+        name = User.objects.get(name=request.POST['user'])
+        if name:
+            return HttpResponse('该用户已存在！')
+    except:
         test = User(name=request.POST['user'],pwd=request.POST['pwd'])
         test.save()
         return HttpResponse('添加用户信息成功！')
@@ -64,4 +65,6 @@ def select_all(request):
 
     context1['data'] = list(ret1)
 
-    return render(request,'all.html',context1)
+    # return render(request,'all.html',context)
+    # 返回字典类型的数据
+    return JsonResponse(context1,safe=False)
